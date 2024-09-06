@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using ProjetoTarefaApi.Models;
 
-namespace ProjetoTarefaApi.Models // Ajuste o namespace conforme necessário
+namespace ProjetoTarefaApi.Data // Ajuste o namespace conforme necessário
 {
     public class AppDbContext : DbContext
     {
