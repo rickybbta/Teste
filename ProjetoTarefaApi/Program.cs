@@ -22,14 +22,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+        Console.WriteLine($"Chave do JWT: {jwtSettings.Key}"); // Adicione esta linha para depuração
+
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings.Issuer,
-            ValidAudience = jwtSettings.Audience,
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = false,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings.Key)),
             ClockSkew = TimeSpan.Zero // Opcional: Para evitar o atraso no tempo de expiração
         };
@@ -69,7 +71,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Adicionar middleware de autenticação
-app.UseAuthentication(); // Adicione esta linha
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

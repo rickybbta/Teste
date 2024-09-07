@@ -5,6 +5,7 @@ using ProjetoTarefaApi.Services;
 using System.ComponentModel.DataAnnotations;
 using ProjetoTarefaApi.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http; // Adicionado para acessar o HttpContext
 
 namespace ProjetoTarefaApi.Controllers
 {
@@ -77,10 +78,10 @@ namespace ProjetoTarefaApi.Controllers
             }
 
             // Gerar o token JWT
-            var token = _tokenService.GenerateToken(usuario.Email);
+            var token = _tokenService.GenerateToken(usuario.Id.ToString());
 
             // Log no console
-            Console.WriteLine($"Usuário logado: {usuario.Email}, Logado com sucesso!");
+            Console.WriteLine($"Usuário logado: {usuario.Id}, Logado com sucesso!");
 
             // Retornar o token e o ID do usuário
             return Ok(new { Token = token, Id = usuario.Id });
@@ -88,9 +89,13 @@ namespace ProjetoTarefaApi.Controllers
 
         // GET: api/usuario/{id}
         [HttpGet("{id}")]
-        [Authorize] // Adiciona autenticação JWT
+        //[Authorize] // Adiciona autenticação JWT
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
+            // Log do token JWT da requisição
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            Console.WriteLine($"Token JWT recebido: {token}");
+
             var usuario = await _context.Usuarios.FindAsync(id);
 
             if (usuario == null)
@@ -103,7 +108,7 @@ namespace ProjetoTarefaApi.Controllers
 
         // PUT: api/usuario/{id}
         [HttpPut("{id}")]
-        [Authorize] // Adiciona autenticação JWT
+        //[Authorize] // Adiciona autenticação JWT
         public async Task<IActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
         {
             if (id != usuario.Id || !ModelState.IsValid)
@@ -131,7 +136,7 @@ namespace ProjetoTarefaApi.Controllers
 
         // DELETE: api/usuario/{id}
         [HttpDelete("{id}")]
-        [Authorize] // Adiciona autenticação JWT
+        //[Authorize] // Adiciona autenticação JWT
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);

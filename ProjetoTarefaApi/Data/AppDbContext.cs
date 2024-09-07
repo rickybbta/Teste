@@ -9,5 +9,6 @@ namespace ProjetoTarefaApi.Data // Ajuste o namespace conforme necessário
 
         // Defina suas DbSets aqui
         public DbSet<Usuario> Usuarios { get; set; } // Define o DbSet para o modelo Usuario
+         public DbSet<Tarefa> Tarefas { get; set; }// Define o DbSet para o modelo Tarefa
     }
 }
