@@ -4,6 +4,7 @@ using ProjetoTarefaApi.Models;
 using ProjetoTarefaApi.Services;
 using System.ComponentModel.DataAnnotations;
 using ProjetoTarefaApi.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProjetoTarefaApi.Controllers
 {
@@ -22,7 +23,6 @@ namespace ProjetoTarefaApi.Controllers
 
         // POST: api/usuario/cadastro
         [HttpPost("cadastro")]
-        
         public async Task<ActionResult<Usuario>> Cadastro([FromBody] Usuario usuario)
         {
             if (usuario == null || !ModelState.IsValid)
@@ -88,6 +88,7 @@ namespace ProjetoTarefaApi.Controllers
 
         // GET: api/usuario/{id}
         [HttpGet("{id}")]
+        [Authorize] // Adiciona autenticação JWT
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
@@ -102,6 +103,7 @@ namespace ProjetoTarefaApi.Controllers
 
         // PUT: api/usuario/{id}
         [HttpPut("{id}")]
+        [Authorize] // Adiciona autenticação JWT
         public async Task<IActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
         {
             if (id != usuario.Id || !ModelState.IsValid)
@@ -129,6 +131,7 @@ namespace ProjetoTarefaApi.Controllers
 
         // DELETE: api/usuario/{id}
         [HttpDelete("{id}")]
+        [Authorize] // Adiciona autenticação JWT
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);

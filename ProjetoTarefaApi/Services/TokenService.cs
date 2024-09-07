@@ -10,23 +10,21 @@ namespace ProjetoTarefaApi.Services
 {
     public class TokenService
     {
-        private readonly IConfiguration _configuration;
-        private readonly string _secretKey;
+        private readonly JwtSettings _jwtSettings;
 
-        public TokenService(IConfiguration configuration)
+        public TokenService(IOptions<JwtSettings> jwtSettings)
         {
-            _configuration = configuration;
-            _secretKey = _configuration["Jwt:Key"]; // Obtenha a chave da configuração
+            _jwtSettings = jwtSettings.Value;
         }
 
         public string GenerateToken(string email)
         {
-            if (string.IsNullOrEmpty(_secretKey))
+            if (string.IsNullOrEmpty(_jwtSettings.Key))
             {
                 throw new ArgumentException("A chave secreta do JWT não está configurada.");
             }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -35,15 +33,20 @@ namespace ProjetoTarefaApi.Services
                 {
                     new Claim(ClaimTypes.Email, email)
                 }),
-                Expires = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["Jwt:ExpireHours"])),
-                Issuer = _configuration["Jwt:Issuer"],
-                Audience = _configuration["Jwt:Audience"],
+                Expires = DateTime.UtcNow.AddHours(_jwtSettings.ExpireHours),
+                Issuer = _jwtSettings.Issuer,
+                Audience = _jwtSettings.Audience,
                 SigningCredentials = creds
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            var writtenToken = tokenHandler.WriteToken(token);
+
+            // Log para verificação
+            Console.WriteLine($"Token gerado: {writtenToken}");
+
+            return writtenToken;
         }
     }
 }

@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using ProjetoTarefaApi.Data; // Ajuste o namespace conforme necessário
-using ProjetoTarefaApi.Configurations; // Adicione este namespace se for necessário para JwtSettings
-using ProjetoTarefaApi.Services; // Adicione este namespace se for necessário para TokenService
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ProjetoTarefaApi.Data;
+using ProjetoTarefaApi.Configurations;
+using ProjetoTarefaApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +12,43 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 25)))); // Ajuste a versão do MySQL conforme necessário
 
 // Configurar JWT settings
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
+// Adicionar o serviço TokenService
 builder.Services.AddSingleton<TokenService>();
+
+// Configurar autenticação JWT
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings.Key)),
+            ClockSkew = TimeSpan.Zero // Opcional: Para evitar o atraso no tempo de expiração
+        };
+
+        // Adicione logs para depuração
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Falha na autenticação: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validado com sucesso.");
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -32,11 +68,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Adicionar middleware de autenticação
+app.UseAuthentication(); // Adicione esta linha
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Adiciona log de inicialização
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("API iniciada com sucesso!");
 logger.LogInformation("Caminho da documentação Swagger: http://localhost:5223/swagger/index.html");
