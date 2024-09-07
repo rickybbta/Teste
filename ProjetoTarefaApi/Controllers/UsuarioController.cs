@@ -44,30 +44,34 @@ namespace ProjetoTarefaApi.Controllers
             return CreatedAtAction(nameof(Cadastro), new { id = usuario.Id }, usuario);
         }
 
-        // POST: api/usuario/login
-        [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] LoginRequest request)
-        {
-            if (request == null || !ModelState.IsValid)
-            {
-                return BadRequest("Dados inválidos.");
-            }
+// POST: api/usuario/login
+[HttpPost("login")]
+public async Task<ActionResult> Login([FromBody] LoginRequest request)
+{
+    if (request == null || !ModelState.IsValid)
+    {
+        return BadRequest("Dados inválidos.");
+    }
 
-            // Verifica se o usuário existe e a senha está correta
-            var usuario = await _context.Usuarios
-                .SingleOrDefaultAsync(u => u.Email == request.Email && u.Senha == request.Senha);
+    // Verifica se o usuário existe e a senha está correta
+    var usuario = await _context.Usuarios
+        .SingleOrDefaultAsync(u => u.Email == request.Email && u.Senha == request.Senha);
 
-            if (usuario == null)
-            {
-                return Unauthorized("Email ou senha inválidos.");
-            }
+    if (usuario == null)
+    {
+        return Unauthorized("Email ou senha inválidos.");
+    }
 
-            // Gerar o token JWT com o ID do usuário
-            var token = _tokenService.GenerateToken(usuario.Email, usuario.Id);
+    // Gerar o token JWT com o ID do usuário
+    var token = _tokenService.GenerateToken(usuario.Email, usuario.Id);
 
-            // Retorna apenas o token JWT
-            return Ok(new { Token = token });
-        }
+    // Log no console com informações do usuário
+    Console.WriteLine($"Usuário Logado: ID = {usuario.Id}, Email = {usuario.Email}, Nome = {usuario.Nome}, Telefone = {usuario.Telefone}");
+
+    // Retorna apenas o token JWT
+    return Ok(new { Token = token });
+}
+
 
         // GET: api/usuario/{id}
         [Authorize]
