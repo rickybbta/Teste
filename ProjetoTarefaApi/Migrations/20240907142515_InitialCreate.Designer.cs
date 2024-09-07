@@ -11,8 +11,8 @@ using ProjetoTarefaApi.Data;
 namespace ProjetoTarefaApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240906143236_Inicio")]
-    partial class Inicio
+    [Migration("20240907142515_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,9 +38,14 @@ namespace ProjetoTarefaApi.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Senha")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Telefone")
                         .IsRequired()
                         .HasColumnType("longtext");
 

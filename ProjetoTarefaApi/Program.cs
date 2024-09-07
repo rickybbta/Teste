@@ -36,4 +36,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Adiciona log de inicialização
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("API iniciada com sucesso!");
+logger.LogInformation("Caminho da documentação Swagger: http://localhost:5223/swagger/index.html");
+
 app.Run();
