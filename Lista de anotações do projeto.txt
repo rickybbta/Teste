@@ -13,6 +13,10 @@ dotnet add package Microsoft.EntityFrameworkCore.Design
 
 ---------------------------------------------------
 
+
+dotnet tool install --global dotnet-ef
+
+
 lembando e Executar as Migration 
 
 dotnet ef migrations add InitialCreate

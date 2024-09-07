@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjetoTarefaApi.Models; // Ajuste o namespace conforme necessário
 using ProjetoTarefaApi.Services; // Importar o namespace onde o TokenService está localizado
-using System.ComponentModel.DataAnnotations; // Importar o namespace correto
 using ProjetoTarefaApi.Data;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace ProjetoTarefaApi.Controllers
 {
@@ -36,50 +38,141 @@ namespace ProjetoTarefaApi.Controllers
             }
 
             // Adiciona o usuário ao banco
-               // Adiciona o usuário ao banco de dados
-               _context.Usuarios.Add(usuario);
-               await _context.SaveChangesAsync();
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
 
-               // Retorna o usuário criado com um código de status 201 (Criado)
-               // Retorna o ID gerado automaticamente
-               return CreatedAtAction(nameof(Cadastro), new { id = usuario.Id }, usuario);
-           }
+            return CreatedAtAction(nameof(Cadastro), new { id = usuario.Id }, usuario);
+        }
 
-           // POST: api/usuario/login
-           [HttpPost("login")]
-           public async Task<ActionResult> Login([FromBody] LoginRequest request)
-           {
-               if (request == null || !ModelState.IsValid)
-               {
-                   return BadRequest("Dados inválidos.");
-               }
+        // POST: api/usuario/login
+        [HttpPost("login")]
+        public async Task<ActionResult> Login([FromBody] LoginRequest request)
+        {
+            if (request == null || !ModelState.IsValid)
+            {
+                return BadRequest("Dados inválidos.");
+            }
 
-               // Verifica se o usuário existe e a senha está correta
-               var usuario = await _context.Usuarios
-                   .SingleOrDefaultAsync(u => u.Email == request.Email && u.Senha == request.Senha);
+            // Verifica se o usuário existe e a senha está correta
+            var usuario = await _context.Usuarios
+                .SingleOrDefaultAsync(u => u.Email == request.Email && u.Senha == request.Senha);
 
-               if (usuario == null)
-               {
-                   return Unauthorized("Email ou senha inválidos.");
-               }
+            if (usuario == null)
+            {
+                return Unauthorized("Email ou senha inválidos.");
+            }
 
-               // Gerar o token JWT
-               var token = _tokenService.GenerateToken(usuario.Email);
+            // Gerar o token JWT com o ID do usuário
+            var token = _tokenService.GenerateToken(usuario.Email, usuario.Id);
 
-               // Retorna o token JWT
-               return Ok(new { Token = token });
-           }
-       }
+            // Retorna apenas o token JWT
+            return Ok(new { Token = token });
+        }
 
-       // Modelo para a solicitação de login
-       public class LoginRequest
-       {
-           [Required]
-           [EmailAddress]
-           public string Email { get; set; }
+        // GET: api/usuario/{id}
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Usuario>> GetUsuario(int id)
+        {
+            // Obtém o ID do usuário autenticado
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-           [Required]
-           [DataType(DataType.Password)]
-           public string Senha { get; set; }
-       }
-   }
+            if (userId == null || int.Parse(userId) != id)
+            {
+                return Unauthorized("Você não tem permissão para acessar este recurso.");
+            }
+
+            var usuario = await _context.Usuarios.FindAsync(id);
+
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+
+            return Ok(usuario);
+        }
+
+        // PUT: api/usuario/{id}
+        [Authorize]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUsuario(int id, [FromBody] Usuario usuarioAtualizado)
+        {
+            if (usuarioAtualizado == null || !ModelState.IsValid)
+            {
+                return BadRequest("Dados inválidos.");
+            }
+
+            // Obtém o ID do usuário autenticado
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null || int.Parse(userId) != id)
+            {
+                return Unauthorized("Você não tem permissão para alterar este recurso.");
+            }
+
+            var usuario = await _context.Usuarios.FindAsync(id);
+
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+
+            // Atualizar os campos permitidos
+            usuario.Nome = usuarioAtualizado.Nome;
+            usuario.Telefone = usuarioAtualizado.Telefone;
+            usuario.Email = usuarioAtualizado.Email;
+            usuario.Senha = usuarioAtualizado.Senha;
+
+            _context.Entry(usuario).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(500, "Erro ao atualizar o usuário.");
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: api/usuario/{id}
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUsuario(int id)
+        {
+            // Obtém o ID do usuário autenticado
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null || int.Parse(userId) != id)
+            {
+                return Unauthorized("Você não tem permissão para excluir este recurso.");
+            }
+
+            var usuario = await _context.Usuarios.FindAsync(id);
+
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+
+            _context.Usuarios.Remove(usuario);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+    }
+
+    // Modelo para a solicitação de login
+    public class LoginRequest
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty; // Inicializa para evitar warnings
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Senha { get; set; } = string.Empty; // Inicializa para evitar warnings
+    }
+}
