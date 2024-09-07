@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using ProjetoTarefaApi.Data; // Ajuste o namespace conforme necessário
 using ProjetoTarefaApi.Configurations; // Adicione este namespace se for necessário para JwtSettings
 using ProjetoTarefaApi.Services; // Adicione este namespace se for necessário para TokenService
-using ProjetoTarefaApi.Middlewares; // Adicione este namespace para o LoggingMiddleware
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,9 +31,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Adicionar o middleware de logging antes do UseAuthorization
-app.UseMiddleware<LoggingMiddleware>();
 
 app.UseAuthorization();
 

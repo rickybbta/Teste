@@ -33,15 +33,7 @@ namespace ProjetoTarefaApi.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Senha")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Telefone")
                         .IsRequired()
                         .HasColumnType("longtext");
 

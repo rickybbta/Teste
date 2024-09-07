@@ -16,36 +16,34 @@ namespace ProjetoTarefaApi.Services
         public TokenService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _secretKey = _configuration["Jwt:Key"] ?? throw new ArgumentNullException("Jwt:Key", "A chave secreta do JWT não está configurada.");
+            _secretKey = _configuration["Jwt:Key"]; // Obtenha a chave da configuração
         }
 
-public string GenerateToken(string email, int usuarioId)
-{
-    if (string.IsNullOrEmpty(_secretKey))
-    {
-        throw new ArgumentException("A chave secreta do JWT não está configurada.");
-    }
-
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
-    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-    var tokenDescriptor = new SecurityTokenDescriptor
-    {
-        Subject = new ClaimsIdentity(new[]
+        public string GenerateToken(string email)
         {
-            new Claim(ClaimTypes.Email, email),
-            new Claim(ClaimTypes.NameIdentifier, usuarioId.ToString())
-        }),
-        Expires = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["Jwt:ExpireHours"])),
-        Issuer = _configuration["Jwt:Issuer"],
-        Audience = _configuration["Jwt:Audience"],
-        SigningCredentials = creds
-    };
+            if (string.IsNullOrEmpty(_secretKey))
+            {
+                throw new ArgumentException("A chave secreta do JWT não está configurada.");
+            }
 
-    var tokenHandler = new JwtSecurityTokenHandler();
-    var token = tokenHandler.CreateToken(tokenDescriptor);
-    return tokenHandler.WriteToken(token);
-}
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Email, email)
+                }),
+                Expires = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["Jwt:ExpireHours"])),
+                Issuer = _configuration["Jwt:Issuer"],
+                Audience = _configuration["Jwt:Audience"],
+                SigningCredentials = creds
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
     }
 }
