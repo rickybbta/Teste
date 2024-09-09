@@ -21,3 +21,11 @@ lembando e Executar as Migration
 
 dotnet ef migrations add InitialCreate
 dotnet ef database update
+
+
+
+
+
+npm install -g @angular/cli@14
+
+npm install @types/node@latest

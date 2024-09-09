@@ -52,6 +52,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// Configurar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200") // Adicione os URLs das origens permitidas aqui
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
+
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -70,7 +81,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Adicionar middleware de autenticação
+// Adicionar middleware de CORS
+app.UseCors("AllowSpecificOrigins"); // Certifique-se de usar o nome da política configurada
+
 app.UseAuthentication();
 app.UseAuthorization();
 
