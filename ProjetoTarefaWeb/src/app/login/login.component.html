@@ -1,28 +1,41 @@
-<div class="login-container">
-    <h2>{{ isLoginMode ? 'Login' : 'Cadastro' }}</h2>
-  
-    <form (ngSubmit)="onSubmit()">
-      <div *ngIf="!isLoginMode">
-        <label for="nome">Nome</label>
-        <input type="text" id="nome" [(ngModel)]="nome" name="nome" required *ngIf="!isLoginMode" />
-      </div>
-  
+<!-- Formulário de login -->
+<form (ngSubmit)="onSubmit()">
+    <div>
       <label for="email">Email</label>
       <input type="email" id="email" [(ngModel)]="email" name="email" required />
-  
-      <div *ngIf="!isLoginMode">
-        <label for="telefone">Telefone</label>
-        <input type="text" id="telefone" [(ngModel)]="telefone" name="telefone" required />
-      </div>
-  
+    </div>
+    
+    <div>
       <label for="senha">Senha</label>
       <input type="password" id="senha" [(ngModel)]="senha" name="senha" required />
+    </div>
+    
+    <button type="submit" style="background-color: blue; color: white;">Entrar</button>
+  </form>
   
-      <button type="submit">{{ isLoginMode ? 'Entrar' : 'Cadastrar' }}</button>
-    </form>
+  <!-- Botão de cadastrar -->
+  <button (click)="onOpenRegisterModal()" style="background-color: green; color: white; margin-top: 10px;">Cadastrar</button>
   
-    <button (click)="onToggleMode()">
-      {{ isLoginMode ? 'Não tem uma conta? Cadastre-se' : 'Já tem uma conta? Faça login' }}
-    </button>
+  <!-- Modal de cadastro -->
+  <div class="modal" [ngClass]="{'show': showModal}" (click)="onCloseRegisterModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>Cadastro</h2>
+      <form (ngSubmit)="onRegister()">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" [(ngModel)]="registerData.nome" name="nome" required />
+  
+        <label for="email">Email</label>
+        <input type="email" id="email" [(ngModel)]="registerData.email" name="email" required />
+  
+        <label for="telefone">Telefone</label>
+        <input type="text" id="telefone" [(ngModel)]="registerData.telefone" name="telefone" required />
+  
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" [(ngModel)]="registerData.senha" name="senha" required />
+  
+        <button type="submit" style="background-color: green; color: white;">Concluir</button>
+        <button type="button" (click)="onCloseRegisterModal()" style="background-color: red; color: white;">Cancelar</button>
+      </form>
+    </div>
   </div>
   

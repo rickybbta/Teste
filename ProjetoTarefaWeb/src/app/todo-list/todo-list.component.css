@@ -1,8 +1,27 @@
-/* Estilo para o modal */
-.modal {
+header {
+    background-color: #f4f4f4;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .header {
+    background-color: #e1e1e1;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .task-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+  }
+  
+  /* Estilo para o modal */
+  .modal {
     display: none;
     position: fixed;
-    z-index: 1000; /* Alto para sobrepor outros conteúdos */
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
@@ -44,7 +63,8 @@
     color: white;
   }
   
-  form div {
-    margin-bottom: 10px;
+  textarea {
+    width: 100%;
+    height: 100px;
   }
   

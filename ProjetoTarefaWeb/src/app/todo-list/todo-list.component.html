@@ -1,0 +1,50 @@
+<p>todo-list works!</p>
+<!-- Cabeçalho com informações do usuário -->
+<header>
+    <h1>Bem-vindo, {{ user.name }}</h1>
+    <p>Email: {{ user.email }}</p>
+  </header>
+  
+  <!-- Botão Adicionar nova tarefa -->
+  <div class="header">
+    <button (click)="onOpenAddTaskModal()" style="background-color: blue; color: white;">Adicionar Nova Tarefa</button>
+  </div>
+  
+  <!-- Lista de Tarefas -->
+  <div *ngFor="let task of tasks" class="task-container">
+    <h2>{{ task.nome }}</h2>
+    <form>
+      <label for="descricao">Descrição</label>
+      <textarea id="descricao" [(ngModel)]="task.descricao" name="descricao"></textarea>
+  
+      <label for="status">Status</label>
+      <select id="status" [(ngModel)]="task.status" name="status">
+        <option value="Pendente">Pendente</option>
+        <option value="Concluída">Concluída</option>
+      </select>
+  
+      <button type="button" (click)="onUpdateTask(task)" style="background-color: green; color: white;">Atualizar</button>
+      <button type="button" (click)="onDeleteTask(task.id)" style="background-color: red; color: white;">Deletar Tarefa</button>
+    </form>
+  </div>
+  
+  <!-- Modal para adicionar nova tarefa -->
+  <div class="modal" [ngClass]="{'show': showAddTaskModal}" (click)="onCloseAddTaskModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>Adicionar Nova Tarefa</h2>
+      <form (ngSubmit)="onAddTask()">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" [(ngModel)]="newTask.nome" name="nome" required />
+  
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" [(ngModel)]="newTask.descricao" name="descricao" required></textarea>
+  
+        <label for="dataRealizacao">Data de Realização</label>
+        <input type="date" id="dataRealizacao" [(ngModel)]="newTask.dataRealizacao" name="dataRealizacao" required />
+  
+        <button type="submit" style="background-color: green; color: white;">Adicionar</button>
+        <button type="button" (click)="onCloseAddTaskModal()" style="background-color: red; color: white;">Cancelar</button>
+      </form>
+    </div>
+  </div>
+  

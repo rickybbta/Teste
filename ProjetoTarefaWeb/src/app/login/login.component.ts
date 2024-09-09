@@ -10,42 +10,45 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   email: string = '';
   senha: string = '';
-  nome: string = '';
-  telefone: string = '';
-  isLoginMode: boolean = true; // Alterna entre login e cadastro
+  registerData = {
+    nome: '',
+    email: '',
+    senha: '',
+    telefone: ''
+  };
+  showModal: boolean = false;
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  onToggleMode() {
-    this.isLoginMode = !this.isLoginMode;
+  onSubmit() {
+    const loginData = { email: this.email, senha: this.senha };
+    this.http.post('http://localhost:5223/api/usuario/login', loginData)
+      .subscribe((response: any) => {
+        console.log('Login bem-sucedido', response);
+        // Armazena as informações do usuário no localStorage
+        localStorage.setItem('user', JSON.stringify(response));
+        this.router.navigate(['/todo-list']); // Redirecionar para a página todo-list zapós o login
+      }, error => {
+        console.error('Erro ao fazer login', error);
+      });
   }
 
-  onSubmit() {
-    if (this.isLoginMode) {
-      // Rota para login
-      const loginData = { email: this.email, senha: this.senha };
-      this.http.post('http://localhost:5223/api/usuario/login', loginData)
-        .subscribe(response => {
-          console.log('Login bem-sucedido', response);
-          this.router.navigate(['/home']); // Redirecionar para a página home após o login
-        }, error => {
-          console.error('Erro ao fazer login', error);
-        });
-    } else {
-      // Rota para cadastro
-      const cadastroData = { 
-        Email: this.email, 
-        Nome: this.nome, 
-        Telefone: this.telefone, 
-        senha: this.senha 
-      };
-      this.http.post('http://localhost:5223/api/usuario/cadastro', cadastroData)
-        .subscribe(response => {
-          console.log('Cadastro bem-sucedido', response);
-          this.router.navigate(['/login']); // Redirecionar para a página de login após cadastro
-        }, error => {
-          console.error('Erro ao fazer cadastro', error);
-        });
-    }
+  onOpenRegisterModal() {
+    this.showModal = true;
+  }
+
+  onCloseRegisterModal() {
+    this.showModal = false;
+  }
+
+  onRegister() {
+    this.http.post('http://localhost:5223/api/usuario/cadastro', this.registerData)
+      .subscribe(response => {
+        alert('Cadastrado com sucesso!');
+        this.showModal = false;
+        this.router.navigate(['/login']); // Redirecionar para a página de login após cadastro
+      }, error => {
+        console.error('Erro ao fazer cadastro', error);
+      });
   }
 }
