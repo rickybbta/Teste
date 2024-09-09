@@ -1,0 +1,32 @@
+<div class="login-container">
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <label for="email">Email:</label>
+      <input type="email" id="email" [(ngModel)]="user.email" name="email" required />
+      
+      <label for="senha">Senha:</label>
+      <input type="password" id="senha" [(ngModel)]="user.senha" name="senha" required />
+      
+      <button type="submit">Login</button>
+      
+      <button type="button" (click)="showSignUpForm = true">Cadastrar</button>
+    </form>
+  
+    <div *ngIf="showSignUpForm" class="sign-up-form">
+      <form (ngSubmit)="onSignUp()" #signUpForm="ngForm">
+        <label for="signUpEmail">Email:</label>
+        <input type="email" id="signUpEmail" [(ngModel)]="signUpUser.email" name="email" required />
+        
+        <label for="signUpNome">Nome:</label>
+        <input type="text" id="signUpNome" [(ngModel)]="signUpUser.nome" name="nome" required />
+        
+        <label for="signUpTelefone">Telefone:</label>
+        <input type="text" id="signUpTelefone" [(ngModel)]="signUpUser.telefone" name="telefone" required />
+        
+        <label for="signUpSenha">Senha:</label>
+        <input type="password" id="signUpSenha" [(ngModel)]="signUpUser.senha" name="senha" required />
+        
+        <button type="submit">Cadastrar</button>
+      </form>
+    </div>
+  </div>
+  
