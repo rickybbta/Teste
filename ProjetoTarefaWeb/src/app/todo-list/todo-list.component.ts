@@ -22,15 +22,26 @@ export class TodoListComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
-    this.loadUser();
-    this.loadTasks();
+    this.loadUser(); // Carregar detalhes do usuário
   }
 
   loadUser() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user && user.id) {
-      this.user = user;
-      this.newTask.usuarioId = this.user.id; // Defina o usuarioId para o newTask
+      // Carregar informações do usuário
+      this.http.get<any>(`http://localhost:5223/api/usuario/${user.id}`)
+        .subscribe(userDetails => {
+          this.user = {
+            id: userDetails.id,
+            name: userDetails.nome,
+            email: userDetails.email
+          };
+          this.newTask.usuarioId = this.user.id; // Defina o usuarioId para o newTask
+          this.loadTasks(); // Carregar tarefas após carregar o usuário
+        }, error => {
+          console.error('Erro ao carregar detalhes do usuário', error);
+          this.router.navigate(['/login']); // Redirecionar para a página de login se ocorrer um erro
+        });
     } else {
       // Redirecionar para a página de login se o usuário não estiver autenticado
       this.router.navigate(['/login']);
@@ -41,7 +52,8 @@ export class TodoListComponent implements OnInit {
     if (this.user.id) {
       this.http.get<any[]>(`http://localhost:5223/api/tarefa/usuario/${this.user.id}`)
         .subscribe(response => {
-          this.tasks = response;
+          // Ordenar tarefas por dataRealizacao da mais nova para a mais antiga
+          this.tasks = response.sort((a, b) => new Date(b.dataRealizacao).getTime() - new Date(a.dataRealizacao).getTime());
         }, error => {
           console.error('Erro ao carregar tarefas', error);
         });
@@ -86,5 +98,14 @@ export class TodoListComponent implements OnInit {
       }, error => {
         console.error('Erro ao deletar tarefa', error);
       });
+  }
+
+  onLogout() {
+    localStorage.removeItem('user'); // Limpar dados do usuário
+    this.router.navigate(['/login']); // Redirecionar para a tela de login
+  }
+
+  onEditUser() {
+    this.router.navigate(['/edit-user']); // Redirecionar para a página de edição do usuário
   }
 }

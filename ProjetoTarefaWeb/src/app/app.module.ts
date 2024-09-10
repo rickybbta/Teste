@@ -5,21 +5,22 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router'; // Importar para configurar as rotas
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
-import { TodoListComponent } from './todo-list/todo-list.component'; // Importar o componente de login
+import { TodoListComponent } from './todo-list/todo-list.component';
+import { EditUserComponent } from './edit-user/edit-user.component'; // Importar o componente de login
 
 const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirecionar para login por padrão
   { path: 'todo-list', component: TodoListComponent },
-  { path: 'login', component: LoginComponent }, // Rota de login
-  { path: '', redirectTo: '/login', pathMatch: 'full' }, // Redireciona para login se o caminho for vazio
-  { path: '**', redirectTo: '/login' } // Redireciona para login para rotas desconhecidas
+  { path: 'edit-user', component: EditUserComponent },
+  { path: 'login', component: LoginComponent },
+  { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    TodoListComponent // Declarar o componente de login
+    TodoListComponent,
+    EditUserComponent // Declarar o componente de login
   ],
   imports: [
     BrowserModule,
