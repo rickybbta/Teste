@@ -26,8 +26,8 @@ Para mais detalhes sobre a API e as rotas disponíveis, veja o arquivo [README.m
 ### 3. **SQL**
 Este diretório contém um exercício SQL proposto, relacionado ao banco de dados da aplicação. Nele você encontrará:
 
-- **Scripts SQL**: Scripts para criação de tabelas, inserção de dados e consultas.
-- **Exercícios Práticos**: Questões de manipulação de dados, incluindo seleções, junções, agregações e outros comandos SQL relevantes para o contexto de gerenciamento de tarefas.
+- **Scripts SQL**: Scripts para criação de tabelas e inserção de dados.
+- **Exercícios Práticos**: Questões de comandos DDL e DML, comandos SQL relevantes para o contexto de gerenciamento de tarefas.
 
 ## Como Rodar o Projeto
 
