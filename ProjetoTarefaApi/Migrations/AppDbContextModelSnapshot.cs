@@ -52,8 +52,6 @@ namespace ProjetoTarefaApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsuarioId");
-
                     b.ToTable("Tarefas");
                 });
 
@@ -85,17 +83,6 @@ namespace ProjetoTarefaApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
-                });
-
-            modelBuilder.Entity("ProjetoTarefaApi.Models.Tarefa", b =>
-                {
-                    b.HasOne("ProjetoTarefaApi.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
                 });
 #pragma warning restore 612, 618
         }
