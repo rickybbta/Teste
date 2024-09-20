@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "ProjetoTarefaWeb:build:production"
+              "buildTarget": "ProjetoTarefaWeb:build:production"
             },
             "development": {
-              "browserTarget": "ProjetoTarefaWeb:build:development"
+              "buildTarget": "ProjetoTarefaWeb:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -75,7 +75,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ProjetoTarefaWeb:build"
+            "buildTarget": "ProjetoTarefaWeb:build"
           }
         },
         "test": {
